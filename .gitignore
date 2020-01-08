@@ -1,0 +1,11 @@
+data
+build
+gprof
+CMakeFiles
+cmake-build-debug
+cherrypick_cpp
+CMakeCache.txt
+.idea
+Makefile
+working
+*.cbp
