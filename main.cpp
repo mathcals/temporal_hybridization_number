@@ -20,7 +20,7 @@ int main(int argc, char** argv){
                 .show_positional_help();
         options.add_options()
                 ("h,help", "help")
-                ("m,method", "algorithm (0=default, 1=semitemporal, 2=nonbinary)", cxxopts::value<int>()->default_value("1"))
+                ("m,method", "algorithm (0=default, 1=semitemporal, 2=nonbinary)", cxxopts::value<int>()->default_value("0"))
                 ("v,verbose", "print detailed progress info", cxxopts::value<bool>())
                 ("t,timeout", "timeout in seconds", cxxopts::value<int>()->default_value("0"))
                 ("c,clusters", "disable cluster reduction", cxxopts::value<bool>())
