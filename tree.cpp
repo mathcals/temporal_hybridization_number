@@ -391,17 +391,18 @@ template <class A, class B> Tree<B>* relabel(Tree<A>* tree, std::unordered_map<A
 }
 
 template <class T>
-std::vector<Tree<tree_leaf> *> labelNumeric(std::vector<Tree<T> *> vector, bool numericString) {
+std::tuple<std::vector<Tree<tree_leaf> *>, std::unordered_map<short, T>> labelNumeric(std::vector<Tree<T> *> vector, bool numericString) {
     std::vector<Tree<tree_leaf> *> ret;
     std::unordered_map<T, short> map;
+    std::unordered_map<short, T> reverseMap;
     int newValue = 1;
     IndexedTree indexed(new Tree(vector[0]));
-
     for (auto &el : indexed.labelMap) {
         if (numericString) {
             newValue = boost::lexical_cast<short>(el.first);
         }
         map[el.first] = newValue;
+        reverseMap[newValue] = el.first;
         newValue++;
 
     }
@@ -411,10 +412,10 @@ std::vector<Tree<tree_leaf> *> labelNumeric(std::vector<Tree<T> *> vector, bool 
         ret.push_back(x);
     }
 
-    return ret;
+    return make_tuple(ret, reverseMap);
 }
 
-template std::vector<Tree<tree_leaf> *> labelNumeric(std::vector<Tree<std::string> *> vector, bool stringNumeric);
+template std::tuple<std::vector<Tree<tree_leaf> *>, std::unordered_map<short, std::string>> labelNumeric(std::vector<Tree<std::string> *> vector, bool stringNumeric);
 
 template <class T>
 std::vector<T> IndexedTree<T>::leaves() {

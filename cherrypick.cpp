@@ -24,7 +24,7 @@
  * @param times
  * @return
  */
-std::tuple<CherryPickResult, int> cherrypickRepeatedly(std::vector<Tree<tree_leaf> *> trees, CherryPickAlgorithm algorithm, int maxTemporalDistance, std::chrono::high_resolution_clock::time_point timeout_time, bool verbose, std::vector<float>& times) {
+std::tuple<CherryPickResult, int> cherrypickRepeatedly(std::vector<Tree<tree_leaf> *> trees, CherryPickAlgorithm algorithm, int maxTemporalDistance, std::chrono::high_resolution_clock::time_point timeout_time, bool verbose, std::vector<float>& times, std::vector<std::tuple<tree_leaf,short>>& return_sequence) {
     auto lastTime = std::chrono::high_resolution_clock::now();
     for (int i = 0; true; i++) {
         std::vector<IndexedTree<tree_leaf> *> indexed;
@@ -41,8 +41,7 @@ std::tuple<CherryPickResult, int> cherrypickRepeatedly(std::vector<Tree<tree_lea
 
         lastTime = new_time;
         CherryPickResult result;
-        std::vector<std::tuple<tree_leaf,short>> return_sequence;
-
+        
         switch (algorithm) {
             case Default: {
                 constraint_set<tree_leaf> cset;
@@ -68,9 +67,10 @@ std::tuple<CherryPickResult, int> cherrypickRepeatedly(std::vector<Tree<tree_lea
         }
 
         switch(result) {
-            case CherryPickResult::success:
             case CherryPickResult::timeout:
             case CherryPickResult::no_solution:
+                return_sequence.clear();
+            case CherryPickResult::success:
                 return {result, i};
         }
 
@@ -78,17 +78,18 @@ std::tuple<CherryPickResult, int> cherrypickRepeatedly(std::vector<Tree<tree_lea
 }
 
 
-std::tuple<CherryPickResult, int, int> cherrypickSemiTemporalRepeatedly(std::vector<Tree<tree_leaf> *> trees, CherryPickAlgorithm algorithm, std::chrono::high_resolution_clock::time_point timeout_time, bool verbose) {
+std::tuple<CherryPickResult, int, int> cherrypickSemiTemporalRepeatedly(std::vector<Tree<tree_leaf> *> trees, CherryPickAlgorithm algorithm, std::chrono::high_resolution_clock::time_point timeout_time, bool verbose, std::vector<std::tuple<tree_leaf,short>>& return_sequence) {
     for (int maxTemporalDistance = 0; true; maxTemporalDistance++) {
         std::vector<float> times;
         if (verbose)
         {
             std::cout << std::endl << "maxTemporalDistance=" << maxTemporalDistance << std::endl << std::endl;
         }
-        auto result = cherrypickRepeatedly(trees, algorithm, maxTemporalDistance, timeout_time, verbose, times);
+        auto result = cherrypickRepeatedly(trees, algorithm, maxTemporalDistance, timeout_time, verbose, times, return_sequence);
         switch(std::get<0>(result)) {
-            case CherryPickResult::success:
             case CherryPickResult::timeout:
+                return_sequence.clear();
+            case CherryPickResult::success:
                 return {std::get<0>(result), std::get<1>(result), maxTemporalDistance};
         }
 

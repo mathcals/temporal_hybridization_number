@@ -9,8 +9,8 @@ CherryPickResult cherrypickV1(std::vector<IndexedTree<tree_leaf >*> trees, int k
 
 enum CherryPickAlgorithm { Default, SemiTemporal, NonBinary };
 
-std::tuple<CherryPickResult, int> cherrypickRepeatedly(std::vector<Tree<tree_leaf > *> trees, CherryPickAlgorithm algorithm, int maxTemporalDistance, std::chrono::high_resolution_clock::time_point timeout_time, bool verbose, std::vector<float> &times) ;
+std::tuple<CherryPickResult, int> cherrypickRepeatedly(std::vector<Tree<tree_leaf > *> trees, CherryPickAlgorithm algorithm, int maxTemporalDistance, std::chrono::high_resolution_clock::time_point timeout_time, bool verbose, std::vector<float> &times, std::vector<std::tuple<tree_leaf,short>> &return_sequence) ;
 
-std::tuple<CherryPickResult, int, int> cherrypickSemiTemporalRepeatedly(std::vector<Tree<tree_leaf> *> trees, CherryPickAlgorithm algorithm, std::chrono::high_resolution_clock::time_point timeout_time, bool verbose);
+std::tuple<CherryPickResult, int, int> cherrypickSemiTemporalRepeatedly(std::vector<Tree<tree_leaf> *> trees, CherryPickAlgorithm algorithm, std::chrono::high_resolution_clock::time_point timeout_time, bool verbose, std::vector<std::tuple<tree_leaf,short>> &return_sequence);
 
 void addResult(CherryPickResult &result, CherryPickResult newValue);

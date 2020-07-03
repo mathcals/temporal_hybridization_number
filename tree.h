@@ -88,13 +88,13 @@ tree_leaf subtreeReduce(std::vector<IndexedTree<tree_leaf>*> trees, tree_leaf it
 
 void subtreeReduce(std::vector<IndexedTree<tree_leaf>*> trees, std::set<tree_leaf> todo, std::map<tree_leaf, short> *in_all, reco_sequence<tree_leaf> &sequence);
 
-template <class T> std::vector<Tree<tree_leaf> *> labelNumeric(std::vector<Tree<T> *> vector);
+template <class T> std::tuple<std::vector<Tree<tree_leaf> *>, std::unordered_map<short, T>> labelNumeric(std::vector<Tree<T> *> vector);
 
 template class Tree<std::string>;
 template class IndexedTree<std::string>;
 template class Tree<tree_leaf>;
 template class IndexedTree<tree_leaf>;
-template <class T> std::vector<Tree<tree_leaf> *> labelNumeric(std::vector<Tree<T> *> vector, bool stringNumeric = false);
+template <class T> std::tuple<std::vector<Tree<tree_leaf> *>, std::unordered_map<short, T>> labelNumeric(std::vector<Tree<T> *> vector, bool stringNumeric = false);
 
 template <class T>
 inline T defaultValue();
