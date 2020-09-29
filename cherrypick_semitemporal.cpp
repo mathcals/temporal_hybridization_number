@@ -213,7 +213,8 @@ pick(std::vector<IndexedTree<tree_leaf> *> &trees, constraint_set<tree_leaf> &C,
 
         for (auto &e: beforeSet) {
             for (auto &n: neighbours(trees, e)) {
-                (*blocked)[n] = -1;
+                if (n != e)
+                    (*blocked)[n] = -1;
             }
         }
 
