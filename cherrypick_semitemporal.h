@@ -17,3 +17,5 @@ T defaultValue();
 std::set<ordered_cherry<tree_leaf>> getTreeChildPickable(std::vector<IndexedTree<tree_leaf> *> vector, std::map<tree_leaf, short> *pMap);
 
 std::set<ordered_cherry<tree_leaf>> getCherries(std::vector<IndexedTree<tree_leaf> *> &trees, std::set<tree_leaf> &beforeSet);
+
+void appendToReturnSequence(reco_sequence<tree_leaf>& sequence, std::vector<std::tuple<tree_leaf, tree_leaf>>& return_sequence);

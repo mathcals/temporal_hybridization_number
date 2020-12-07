@@ -91,6 +91,13 @@ void writeSolution(std::vector<std::tuple<tree_leaf,short>> return_sequence, std
     std::cout << std::endl;
 }
 
+void writeTreeChildSolution(std::vector<std::tuple<tree_leaf,tree_leaf>> treeChildSequence, std::unordered_map<short, std::string> map) {
+    std::cout << "Final solution: " << std::endl;
+    for (auto &elem: treeChildSequence) {
+        std::cout << " (" << map[std::get<0>(elem)] << "," << map[std::get<1>(elem)] << ") -> ";
+    }
+    std::cout << std::endl;
+}
 int run(std::vector<std::string> files, CherryPickAlgorithm method, int timeout, bool verbose, bool doClusterReduction, bool printSolution) {
     if (!verbose) {
         std::cout << "filename" << "\t" << "value" << "\t" << "running_time" << "\t" << "time_out" << "\t" << "lower_bound" << "\t" << "number_of_clusters" << "\t"  << "temporal_distance" << std::endl;
@@ -127,20 +134,21 @@ int run(std::vector<std::string> files, CherryPickAlgorithm method, int timeout,
         if (verbose) {
             std::cout << "Reduce to " << instances.size() << " instances" << std::endl;
         }
-
+        
         for (auto &instance: instances) {
             CherryPickResult partResult;
             int partHybridizationNumber;
             int partTemporalDistance = 0;
-            std::vector<std::tuple<tree_leaf,short>> return_sequence;            
+            std::vector<std::tuple<tree_leaf,short>> return_sequence;
+            std::vector<std::tuple<tree_leaf,tree_leaf>> treeChildSequence;            
             if (method == CherryPickAlgorithm::SemiTemporal) {
-                auto res = cherrypickSemiTemporalRepeatedly(instance, method, timeoutTime, verbose, return_sequence);
+                auto res = cherrypickSemiTemporalRepeatedly(instance, method, timeoutTime, verbose, treeChildSequence);
                 partResult = std::get<0>(res);
                 partHybridizationNumber = std::get<1>(res);
                 partTemporalDistance = std::get<2>(res);
             } else {
                 std::vector<float> times;
-                auto res = cherrypickRepeatedly(instance, method, 0, timeoutTime, verbose, times, return_sequence);
+                auto res = cherrypickRepeatedly(instance, method, 0, timeoutTime, verbose, times, return_sequence, treeChildSequence);
                 partResult = std::get<0>(res);
                 partHybridizationNumber = std::get<1>(res);
             }
@@ -152,7 +160,12 @@ int run(std::vector<std::string> files, CherryPickAlgorithm method, int timeout,
             nonTemporalNumber += partTemporalDistance;
 
             if (printSolution) {
-                writeSolution(return_sequence, std::get<1>(labelResult));
+                if (method == CherryPickAlgorithm::SemiTemporal) {
+                    writeTreeChildSolution(treeChildSequence, std::get<1>(labelResult));
+                }
+                else {    
+                    writeSolution(return_sequence, std::get<1>(labelResult));
+                }
             }
         }
         auto result = std::make_tuple(resultType, resultNumber, nonTemporalNumber);

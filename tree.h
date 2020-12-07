@@ -81,7 +81,7 @@ tree_leaf subtreeReduce(std::vector<IndexedTree<tree_leaf>*> trees, tree_leaf it
 
 void subtreeReduce(std::vector<IndexedTree<tree_leaf>*> trees, std::set<tree_leaf> item, std::map<tree_leaf, short>* = NULL);
 
-
+void subtreeReduce(std::vector<IndexedTree<tree_leaf>*> trees, reco_sequence<tree_leaf>& recoSequence);
 
 tree_leaf subtreeReduce(std::vector<IndexedTree<tree_leaf>*> trees, tree_leaf item, std::map<tree_leaf, short> *in_all, reco_sequence<tree_leaf> &sequence);
 

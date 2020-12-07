@@ -16,6 +16,24 @@ bool allTreesFullyReduced(std::vector<IndexedTree<tree_leaf> *> trees) {
     return true;
 }
 
+void appendToReturnSequence(reco_sequence<tree_leaf>& sequence, std::vector<std::tuple<tree_leaf, tree_leaf>>& return_sequence) {
+    tree_leaf lastX = -1;
+    std::set<tree_leaf> lastY;
+    for (auto pos = sequence.rbegin(); pos != sequence.rend(); pos++) {
+                auto other = pos->elem->children[0]->name == pos->elem_name ? pos->elem->children[1] : pos->elem->children[0];
+                auto x = pos->elem_name;
+                auto y = other->name;
+                
+                if (lastX != x) {
+                    lastX = x;
+                    lastY.clear();
+                }
+                if (lastY.find(y) == lastY.end()) {
+                    return_sequence.insert(return_sequence.begin(), {x, y});
+                    lastY.insert(y);
+                }
+            }
+}
 
 /**
  * Implementation of
@@ -30,7 +48,7 @@ bool allTreesFullyReduced(std::vector<IndexedTree<tree_leaf> *> trees) {
  * @param return_sequence
  * @return
  */
-CherryPickResult cherrypickSemiTemporal(std::vector<IndexedTree<tree_leaf> *> trees, constraint_set<tree_leaf> &C, int k, int orig_k, int p, std::set<tree_leaf> beforeSet, std::chrono::high_resolution_clock::time_point timeout, std::map<tree_leaf, short>& in_all, std::vector<std::tuple<tree_leaf, short>>& return_sequence) {
+CherryPickResult cherrypickSemiTemporal(std::vector<IndexedTree<tree_leaf> *> trees, constraint_set<tree_leaf> &C, int k, int orig_k, int p, std::set<tree_leaf> beforeSet, std::chrono::high_resolution_clock::time_point timeout, std::map<tree_leaf, short>& in_all, std::vector<std::tuple<tree_leaf, tree_leaf>>& return_sequence) {
     CherryPickResult result = CherryPickResult::no_solution;
     if (C.C.size() == 0 && C.key_count > 0) {
         throw std::runtime_error("Error during execution");
@@ -89,7 +107,6 @@ CherryPickResult cherrypickSemiTemporal(std::vector<IndexedTree<tree_leaf> *> tr
                 constraint_set<tree_leaf> newC(C);
                 newC.C.insert({x, neigh});
                 std::map<tree_leaf, short> in_all1 = in_all;
-                //printTrees(trees);
                 addResult(result, cherrypickSemiTemporal(trees, newC, k, orig_k, p, beforeSet, timeout, in_all1,
                                                          return_sequence));
                 if (result == CherryPickResult::success) goto bret;
@@ -165,8 +182,11 @@ CherryPickResult cherrypickSemiTemporal(std::vector<IndexedTree<tree_leaf> *> tr
                     addResult(result,
                               cherrypickSemiTemporal(trees, newC, k - 1, orig_k, p - 1, newBeforeSet, timeout, in_all1,
                                                      return_sequence));
+                    if (result == CherryPickResult::success) {
+                        appendToReturnSequence(tempRecoSequence, return_sequence);
+                        goto bret;
+                    }
                     reconstruct<tree_leaf>(trees, &in_all1, tempRecoSequence);
-                    if (result == CherryPickResult::success) goto bret;
 
                 }
             }
@@ -175,11 +195,7 @@ CherryPickResult cherrypickSemiTemporal(std::vector<IndexedTree<tree_leaf> *> tr
         bret:
         delete blocked;
         if (result == CherryPickResult::success) {
-            for (auto pos = sequence.rbegin(); pos != sequence.rend(); pos++) {
-                if (pos->weight != 0)
-                return_sequence.insert(return_sequence.begin(), {pos->elem_name, pos->weight});
-            }
-
+            appendToReturnSequence(sequence, return_sequence);
         }
         reconstruct<tree_leaf>(trees, &in_all, sequence);
 

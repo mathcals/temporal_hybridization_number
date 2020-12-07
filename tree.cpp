@@ -102,6 +102,13 @@ void subtreeReduce(std::vector<IndexedTree<tree_leaf>*> trees) {
     subtreeReduce(trees, todo);
 }
 
+void subtreeReduce(std::vector<IndexedTree<tree_leaf>*> trees, reco_sequence<tree_leaf>& recoSequence) {
+    std::set<tree_leaf> todo;
+    for (auto &x: trees[0]->labelMap) {
+        todo.insert(x.first);
+    }
+    subtreeReduce(trees, todo, NULL, recoSequence);
+}
 
 
 
